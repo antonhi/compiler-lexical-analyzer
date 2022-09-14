@@ -48,11 +48,39 @@ Symbol newSym(int tokenId, Object value) {
 /*-*
  * PATTERN DEFINITIONS:
  */
-number = -?[0-9]+
-id = [a-zA-Z]+
+int = -?[0-9]+
+float = -?[0-9]+.[0-9]+
+id = [a-zA-Z]+[0-9]*
+char = '[[^']&&[^\\]]'|'\\n'|'\\t'
+comment = \\\\.*
+blockcomment = /\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/
 letter = [[[^\n]&&[^\t]]&&[[^\\][^\"]]]|\\\\|\\\"
 string = \"{letter}*\"
 whitespace = [ \n\t\r]
+
+Optionalfinal = final|^$
+Optionalsemi = ;|^$
+OptionalElse = else {Stmt}|^$
+Optionalexpr = = {Expr}|^$
+Type = int|char|bool|float
+Returntype = {Type}|void
+ArgdeclList = {Argdecl}, {ArgdeclList}| {Argdecl}
+Argdecl = {Type} {id}|{Type} {id} \[\]
+Argdecls = {ArgdeclList}|^$
+Args = {Expr}, {Args}|{Expr}
+Name = {id}|{id} \[{Expr}\]
+BinaryOp = \*|\/|\+|-|<|>|<=|>=|==|<>|\|\||&&
+Expr = {Name}|{id}\(\)|{id}({Args})|intlit|charlit|strlit|floatlit|true|false|\({Expr}\)|\~ {Expr}| \- {Expr}| \+ {Expr}|\({Type}\) {Expr}|{Expr} {BinaryOp} {Expr}|\({Expr} \? {Expr} : {Expr}\)
+Readlist = {Name}, {Readlist}|{Name}
+Printlist = {Expr}, {Printlist}|{Expr}
+Printlinelist = {Printlist}|^$
+Stmt = if \({Expr}\) {Stmt} {OptionalElse}| while \({Expr}\) {Stmt}|{Name} = {Expr};|read\({Readlist}\);|print\({Printlist}\);|printline\({Printlinelist}\);|{id}\(\);|{id}\({Args}\);|return;|return {Expr};|{Name}\+\+|{Name}--|{ {Fielddecls} {Stmts} } {Optionalsemi}
+Stmts = {Stmt} {Stmts}|^$
+Methoddecl = {Returntype} {id} \({Argdecls}\) { {Fielddecls} {Stmts} } {Optionalsemi}
+Methoddecls = {Methoddecl} {Methoddecls}|^$
+Fielddecl = {Optionalfinal} {Type} {id} {Optionalexpr};
+Fielddecls = {Fielddecl} {Fielddecls}|^$
+Memberdecls = {Fielddecls} {Methoddecls}
 
 
 
@@ -88,7 +116,8 @@ down            {return newSym(sym.DOWN, "down");}
 flip            {return newSym(sym.FLIP, "flip");}
 "?"             {return newSym(sym.QUESTION, "?");}
 {id}            {return newSym(sym.ID, yytext());}
-{number}        {return newSym(sym.NUMBERLIT, new Integer(yytext()));}
+{int}           {return newSym(sym.NUMBERLIT, new Integer(yytext()));}
+{float}         {return newSym(sym.FLOATLIT, new Float(yytext()));}
 {string}        {return newSym(sym.STRINGLIT, yytext());}
 {whitespace}    { /* Ignore whitespace. */ }
 .               { System.out.println("Illegal char, '" + yytext() +
