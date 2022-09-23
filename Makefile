@@ -20,9 +20,9 @@ run: sampleFile.utd
 all: Lexer.java parser.java $(FILE:java=class)
 
 sampleFile.utd: all
-		$(JAVA) -cp $(CP) LexerTest sampleFile.utd > sampleFile-output.txt
-		cat sampleFile.utd
-		cat -n sampleFile-output.txt
+		$(JAVA) -cp $(CP) LexerTest basicRegex.txt > output.txt
+		cat basicRegex.txt
+		cat -n output.txt
 
 clean:
 		rm -f *.class *~ *.bak Lexer.java parser.java sym.java

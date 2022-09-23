@@ -31,6 +31,33 @@ terminal UP;       //29
 terminal DOWN;     //30
 terminal FLIP;     //31
 terminal QUESTION; //32
+terminal NUMBERLIT; //33
+terminal CHARLIT; //34
+terminal FLOATLIT; //35
+terminal STRINGLIT; //36
+terminal COMMENT; //37
+terminal BLOCKCOMMENT; //38
+terminal BINARYOP; //39
+terminal TYPE; //40
+terminal RETURNTYPE; //41
+terminal ARGDECLLIST; //42
+terminal ARGDECL; //43
+terminal ARGDECLS; //44
+terminal ARGS; //45
+terminal NAME; //46
+terminal EXPR; //47
+terminal READLIST; //48
+terminal PRINTLIST; //49
+terminal PRINTLINELIST; //50
+terminal STMT; //51
+terminal STMTS; //52
+terminal METHODDECL; //53
+terminal METHODDECLS; //54
+terminal FIELDDECL; //55
+terminal FIELDDECLS; //56
+terminal MEMBERDECLS; //57
+terminal PROGRAM; //58
+
 
 
 non terminal dummy;

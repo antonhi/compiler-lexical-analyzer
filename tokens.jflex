@@ -53,33 +53,32 @@ float = -?[0-9]+.[0-9]+
 id = [a-zA-Z]+[0-9]*
 char = '[[^']&&[^\\]]'|'\\n'|'\\t'
 comment = \\\\.*
-blockcomment = /\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/
+blockcomment = \/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/
 letter = [[[^\n]&&[^\t]]&&[[^\\][^\"]]]|\\\\|\\\"
 string = \"{letter}*\"
 whitespace = [ \n\t\r]
-
 BinaryOp = \*|\/|\+|-|<|>|<=|>=|==|<>|\|\||&&
-Optionalfinal = final|^$
-Optionalsemi = ;|^$
-OptionalElse = else {Stmt}|^$
-Optionalexpr = = {Expr}|^$
+Optionalfinal = final|[^$]
+Optionalsemi = ;|[^$]
+OptionalElse = else {Stmt}|[^$]
+Optionalexpr = = {Expr}|[^$]
 Type = int|char|bool|float
 Returntype = {Type}|void
 ArgdeclList = {Argdecl}, {ArgdeclList}| {Argdecl}
 Argdecl = {Type} {id}|{Type} {id} \[\]
-Argdecls = {ArgdeclList}|^$
+Argdecls = {ArgdeclList}|[^$]
 Args = {Expr}, {Args}|{Expr}
 Name = {id}|{id} \[{Expr}\]
 Expr = {Name}|{id}\(\)|{id}({Args})|intlit|charlit|strlit|floatlit|true|false|\({Expr}\)|\~ {Expr}| \- {Expr}| \+ {Expr}|\({Type}\) {Expr}|{Expr} {BinaryOp} {Expr}|\({Expr} \? {Expr} : {Expr}\)
 Readlist = {Name}, {Readlist}|{Name}
 Printlist = {Expr}, {Printlist}|{Expr}
-Printlinelist = {Printlist}|^$
-Stmt = if \({Expr}\) {Stmt} {OptionalElse}| while \({Expr}\) {Stmt}|{Name} = {Expr};|read\({Readlist}\);|print\({Printlist}\);|printline\({Printlinelist}\);|{id}\(\);|{id}\({Args}\);|return;|return {Expr};|{Name}\+\+|{Name}--|{ {Fielddecls} {Stmts} }{Optionalsemi}
-Stmts = {Stmt} {Stmts}|^$
-Methoddecl = {Returntype} {id} \({Argdecls}\) { {Fielddecls} {Stmts} } {Optionalsemi}
-Methoddecls = {Methoddecl} {Methoddecls}|^$
+Printlinelist = {Printlist}|[^$]
+Stmt = if \({Expr}\) {Stmt} {OptionalElse}| while \({Expr}\) {Stmt}|{Name} = {Expr};|read\({Readlist}\);|print\({Printlist}\);|printline\({Printlinelist}\);|{id}\(\);|{id}\({Args}\);|return;|return {Expr};|{Name}\+\+|{Name}--|\{ {Fielddecls} {Stmts} \}{Optionalsemi}
+Stmts = {Stmt} {Stmts}|[^$]
+Methoddecl = {Returntype} {id} \({Argdecls}\) \{ {Fielddecls} {Stmts} \} {Optionalsemi}
+Methoddecls = {Methoddecl} {Methoddecls}|[^$]
 Fielddecl = {Optionalfinal} {Type} {id} {Optionalexpr};
-Fielddecls = {Fielddecl} {Fielddecls}|^$
+Fielddecls = {Fielddecl} {Fielddecls}|[^$]
 Memberdecls = {Fielddecls} {Methoddecls}
 Program = class {id} \{ {Memberdecls} \}
 
@@ -87,6 +86,33 @@ Program = class {id} \{ {Memberdecls} \}
 /**
  * LEXICAL RULES:
  */
+start           {return newSym(sym.START, "start");}
+end             {return newSym(sym.END, "end");}
+in              {return newSym(sym.IN, "in");}
+out             {return newSym(sym.OUT, "out");}
+":)"            {return newSym(sym.SMILE, ":)");}
+"("             {return newSym(sym.LPAREN, "(");}
+")"             {return newSym(sym.RPAREN, ")");}
+":"             {return newSym(sym.COLON, ":");}
+number          {return newSym(sym.NUMBER, "number");}
+string          {return newSym(sym.STRING, "string");}
+flag            {return newSym(sym.FLAG, "flag");}
+main            {return newSym(sym.MAIN, "main");}
+"<-"            {return newSym(sym.ASSIGN, "<-");}
+read            {return newSym(sym.READ, "read");}
+write           {return newSym(sym.WRITE, "write");}
+call            {return newSym(sym.CALL, "call");}
+when            {return newSym(sym.WHEN, "when");}
+do              {return newSym(sym.DO, "do");}
+done            {return newSym(sym.DONE, "done");}
+"-"             {return newSym(sym.MINUS, "-");}
+"+"             {return newSym(sym.PLUS, "+");}
+"*"             {return newSym(sym.MULTIPLY, "*");}
+"/"             {return newSym(sym.DIVIDE, "/");}
+up              {return newSym(sym.UP, "up");}
+down            {return newSym(sym.DOWN, "down");}
+flip            {return newSym(sym.FLIP, "flip");}
+"?"             {return newSym(sym.QUESTION, "?");}
 {id}            {return newSym(sym.ID, yytext());}
 {int}           {return newSym(sym.NUMBERLIT, new Integer(yytext()));}
 {char}          {return newSym(sym.CHARLIT, yytext());}
@@ -116,32 +142,4 @@ Program = class {id} \{ {Memberdecls} \}
 {Program}       {return newSym(sym.PROGRAM, yytext());}
 {whitespace}    { /* Ignore whitespace. */ }
 .               { System.out.println("Illegal char, '" + yytext() +
-                    "' line: " + yyline + ", column: " + yychar); } 
-
-start           {return newSym(sym.START, "start");}
-end             {return newSym(sym.END, "end");}
-in              {return newSym(sym.IN, "in");}
-out             {return newSym(sym.OUT, "out");}
-":)"            {return newSym(sym.SMILE, ":)");}
-"("             {return newSym(sym.LPAREN, "(");}
-")"             {return newSym(sym.RPAREN, ")");}
-":"             {return newSym(sym.COLON, ":");}
-number          {return newSym(sym.NUMBER, "number");}
-string          {return newSym(sym.STRING, "string");}
-flag            {return newSym(sym.FLAG, "flag");}
-main            {return newSym(sym.MAIN, "main");}
-"<-"            {return newSym(sym.ASSIGN, "<-");}
-read            {return newSym(sym.READ, "read");}
-write           {return newSym(sym.WRITE, "write");}
-call            {return newSym(sym.CALL, "call");}
-when            {return newSym(sym.WHEN, "when");}
-do              {return newSym(sym.DO, "do");}
-done            {return newSym(sym.DONE, "done");}
-"-"             {return newSym(sym.MINUS, "-");}
-"+"             {return newSym(sym.PLUS, "+");}
-"*"             {return newSym(sym.MULTIPLY, "*");}
-"/"             {return newSym(sym.DIVIDE, "/");}
-up              {return newSym(sym.UP, "up");}
-down            {return newSym(sym.DOWN, "down");}
-flip            {return newSym(sym.FLIP, "flip");}
-"?"             {return newSym(sym.QUESTION, "?");}
+                    "' line: " + yyline + ", column: " + yychar); }
